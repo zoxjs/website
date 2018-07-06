@@ -2,12 +2,13 @@ copyright: Copyright © 2018 Zoran Ravic
 linkGroups:
   - title: Docs
     links:
-      - { title: Installation,    url: /docs/installation }
-      - { title: Main Concepts,   url: /docs/main-concepts }
-      - { title: Advanced Guides, url: /docs/advanced-guides }
-      - { title: Contributing,    url: /docs/contributing }
-      - { title: FAQ,             url: /docs/faq }
+      - { title: Single File Example, url: /docs/single-file-example }
+      - { title: Main Concepts, url: /docs/plugins }
+      - { title: Static Sites, url: /docs/static-site-setup }
+      - { title: Rendering, url: /docs/render-service }
+      - { title: React, url: /docs/react-ssr }
+      - { title: GraphQL, url: /docs/graphql-intro }
   - title: More
     links:
-      - { title: Tutorial, url: /tutorial }
-      - { title: Blog,     url: /blog }
+      - { title: Advanced Guides, url: /docs/websocket-controllers }
+      - { title: Services, url: /docs/date-formatter }

@@ -13,7 +13,7 @@ highlights:
 
       Built-in Server-side rendering for React will make your
       pages search engine friendly and let them load faster.
-    url: /docs/page-controllers
+    url: /docs/render-service
   - title: Static Site Generation
     text.md: |-
       Write your blog posts in markdown or create general purpose pages in yaml.
@@ -28,7 +28,7 @@ highlights:
       and let the built-in schema builder create the actual GraphQL schema for you.
 
       Subscribe to any GraphQL subscription endpoint via WebSocket or EventStream.
-    url: /docs/graphql
+    url: /docs/graphql-intro
 examples:
   - title: A simple controller
     text.md: |-

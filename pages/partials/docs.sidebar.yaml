@@ -49,6 +49,3 @@ sidebarLinkGroups:
     links:
       - { title: Date Formatter, url: /docs/date-formatter }
       - { title: Property Decorators, url: /docs/property-decorators }
-  - title: Contributing
-    links:
-      - { title: How to Contribute, url: /contribute }

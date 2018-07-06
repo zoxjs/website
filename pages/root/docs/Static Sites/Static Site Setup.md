@@ -15,7 +15,7 @@ All you need to get started with static pages is to install these 2 npm modules:
 npm i zox zox-static-pages
 ```
 
-Then [bootstrap your environment](/docs/environment-bootstraping)
+Then [bootstrap your environment](/docs/environment-bootstrapping)
 the same way as when normally running zox server.  
 This will allow you to preview your pages.
 

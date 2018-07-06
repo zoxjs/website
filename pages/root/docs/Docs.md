@@ -32,7 +32,7 @@ in a more user friendly way is also possible,
 but not available by default.
 
 
-## [Rendering Pipeline](/docs/page-controllers)
+## [Rendering Pipeline](/docs/render-service)
 
 If you're going to work with templates
 you're going to want to know they are handled internally.
@@ -54,7 +54,7 @@ and subscribe to a remote event feed
 to keep your component up to date with the server state.
 
 
-## [GraphQL](/docs/graphql)
+## [GraphQL](/docs/graphql-intro)
 
 While at the beginning developing your API using `REST` endpoints
 seems as a more practical approach,
