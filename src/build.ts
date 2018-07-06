@@ -14,7 +14,7 @@ async function start()
     const staticExport = container.get(IStaticExportService);
     console.log('Exporting Static Site...');
     const pages = await staticExport.getPages('/');
-    await staticExport.savePages('docs', pages);
+    await staticExport.savePages('../www', pages);
     process.exit(0);
 }
 
