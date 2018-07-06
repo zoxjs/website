@@ -1,0 +1,25 @@
+
+@import "palette";
+
+pre {
+  background: $code-bg;
+  color: $gray-text;
+  margin-left: -30px;
+  margin-right: -30px;
+  margin-bottom: 0;
+  padding: 15px 30px;
+  border-radius: 10px;
+  overflow: auto;
+  .hljs {
+    padding: 0;
+    background: none;
+  }
+}
+
+:not(pre) > code {
+  background: $primary-lighter;
+  border-radius: 5px;
+  padding: 2px 5px;
+  color: $primary-text;
+  display: inline;
+}

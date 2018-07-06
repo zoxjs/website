@@ -1,0 +1,5 @@
+leftSideLinks:
+  - { title: Docs,     url: /docs }
+rightSideLinks:
+  - { title: v0.1.0, url: /versions }
+  - { title: GitHub, url: / }

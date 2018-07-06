@@ -1,0 +1,53 @@
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>{{title}}</h1>
+            {{#if date}}<p class="date">{{formatDate date 'd. mmm yyyy.'}}</p>{{/if}}
+            <div class="body">{{{body}}}</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                {{#each sidebarLinkGroups}}
+                    <h4>{{title}}</h4>
+                    <ul>
+                        {{#each links}}
+                            <li{{#ifEquals ../../url url}} class="current"{{/ifEquals}}><a href="{{url}}">{{title}}</a></li>
+                        {{/each}}
+                    </ul>
+                {{/each}}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                            {{#if prevPage}}
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="{{prevPage.url}}">{{prevPage.title}}</a></h3>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                            {{#if nextPage}}
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="{{nextPage.url}}">{{nextPage.title}}</a></h3>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

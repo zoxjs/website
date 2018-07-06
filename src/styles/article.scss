@@ -1,0 +1,43 @@
+
+@import "palette";
+
+.article {
+  h1 {
+    color: $primary-text;
+    font-size: 60px;
+    line-height: 65px;
+    font-weight: 700;
+  }
+  .date {
+    color: $secondary-text;
+    font-style: italic;
+  }
+  .body {
+    padding-top: 20px;
+    > p:first-child {
+      font-size: 24px;
+      font-weight: 300;
+      color: $secondary-text;
+      code, code.hljs {
+        color: $secondary-text * .7;
+      }
+    }
+    p {
+      font-size: 17px;
+      line-height: 1.7;
+    }
+    > * {
+      margin-top: 30px;
+    }
+  }
+  blockquote {
+    background-color: $primary-lighter;
+    margin-left: -30px;
+    margin-right: -30px;
+    padding: 15px 30px;
+    border-radius: 10px;
+    p {
+      margin: 0;
+    }
+  }
+}

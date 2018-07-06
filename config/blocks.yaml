@@ -1,0 +1,6 @@
+header:
+  - navbar
+content:
+  - pure-content
+footer:
+  - footer

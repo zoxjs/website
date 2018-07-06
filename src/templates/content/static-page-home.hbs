@@ -1,0 +1,44 @@
+<header class="secondary text-center pad-lg">
+    <div class="container hero-text">
+        <h1 class="display-3 primary-color">{{heroTitle}}</h1>
+        <p class="lead">{{heroText}}</p>
+    </div>
+    <div class="home-buttons">
+        <a href="{{ctaUrl}}" class="btn large-btn btn-get-started">{{ctaText}}</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row short-info">
+        {{#each highlights}}
+            <div class="col-md-4">
+                <h3>{{title}}</h3>
+                {{{text}}}
+                <a href="{{url}}" class="btn large-btn">Learn More</a>
+            </div>
+        {{/each}}
+    </div>
+</div>
+
+<div class="container code-examples pad-md pad-md-top-not-first">
+    {{#each examples}}
+        <div class="row">
+            <div class="col-lg-5">
+                <h3><b>{{title}}</b></h3>
+                {{{text}}}
+            </div>
+            <div class="col-lg-7 code-container">
+                <div class="code-block">
+                    <h5 class="code-title">{{codeTitle}}</h5>
+                    <pre><code class="{{codeClass}}">{{code}}</code></pre>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>
+
+<div class="secondary text-center pad-sm">
+    <div class="home-buttons">
+        <a href="{{ctaUrl}}" class="btn large-btn btn-get-started">{{ctaText}}</a>
+    </div>
+</div>

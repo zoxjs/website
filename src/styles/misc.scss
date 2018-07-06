@@ -1,0 +1,24 @@
+
+.pad-xs {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.pad-sm {
+  padding-top: 40px;
+  padding-bottom: 35px;
+}
+
+.pad-md {
+  padding-top: 60px;
+  padding-bottom: 50px;
+}
+
+.pad-lg {
+  padding-top: 80px;
+  padding-bottom: 70px;
+}
+
+.pad-md-top-not-first > *:not(:first-child) {
+  padding-top: 50px;
+}

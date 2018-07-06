@@ -1,0 +1,21 @@
+
+@import "palette";
+
+#sidebar {
+  ul {
+    padding: 0;
+  }
+  li {
+    list-style-type: none;
+    padding-left: 20px;
+  }
+  li.current {
+    padding-left: 17px;
+    border-left: 3px solid $primary;
+  }
+  a {
+    &:hover, &:active {
+      text-decoration: none;
+    }
+  }
+}

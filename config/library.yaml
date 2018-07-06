@@ -1,0 +1,13 @@
+global:
+  styles:
+    - href: ~/bootstrap/dist/css/bootstrap.min.css
+    - href: ~/highlight.js/styles/vs2015.css
+    - href: bundle.css
+  scripts:
+    - src: ~/jquery/dist/jquery.slim.min.js
+    - src: ~/popper.js/dist/umd/popper.min.js
+    - src: ~/bootstrap/dist/js/bootstrap.min.js
+    - src: bundle.js
+react:
+  scripts:
+    - src: bundle-react.js

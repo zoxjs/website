@@ -1,0 +1,69 @@
+
+@import "palette";
+
+.hero-text {
+  padding-bottom: 70px;
+}
+
+.home-buttons {
+  .btn {
+    font-size: 25px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 0;
+    padding: 10px 20px;
+  }
+  .btn-get-started {
+    background-color: $primary;
+    color: $secondary-bg;
+    &:hover {
+      color: $secondary-bg;
+      background-color: $gray-text;
+    }
+  }
+  .btn-learn {
+    color: $primary;
+    &:hover {
+      color: $text;
+    }
+  }
+}
+
+.short-info {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  border-bottom: 1px solid $faint-divider;
+  h3 {
+    color: $lighter-text;
+    font-weight: 300;
+  }
+  p {
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .btn {
+    border-radius: 0;
+    background-color: $primary;
+    color: $text;
+    &:hover {
+      background-color: $primary-darker;
+    }
+  }
+}
+
+.code-examples {
+  .code-container {
+    padding-left: 40px;
+    padding-right: 40px;
+    .code-block {
+      background-color: $primary-bg;
+      margin-left: -35px;
+      margin-right: -35px;
+      padding: 5px 35px 5px;
+      border-radius: 10px;
+      .code-title {
+        color: $lighter-text;
+      }
+    }
+  }
+}

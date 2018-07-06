@@ -1,0 +1,41 @@
+
+@import "palette";
+
+.primary,
+.secondary,
+.accent {
+  color: $text;
+  a {
+    color: $text;
+    &:hover, &:active {
+      color: $primary;
+    }
+  }
+}
+
+.primary {
+  background-color: $primary-bg;
+}
+
+.secondary {
+  background-color: $secondary-bg;
+}
+
+.primary-color {
+  color: $primary;
+}
+
+.primary-text {
+  color: $primary-text;
+}
+
+.secondary-text {
+  color: $secondary-text;
+}
+
+a {
+  color: $primary;
+  &:hover, &:active {
+    color: $primary-darker;
+  }
+}

@@ -1,0 +1,54 @@
+sidebarLinkGroups:
+  - title: Introduction
+    links:
+      - { title: Get Started, url: /docs }
+      - { title: Single File Example, url: /docs/single-file-example }
+  - title: Main Concepts
+    links:
+      - { title: Plugins, url: /docs/plugins }
+      - { title: Services, url: /docs/services }
+      - { title: Environment Bootstrapping, url: /docs/environment-bootstrapping }
+      - { title: Configuration, url: /docs/config }
+      - { title: Controllers, url: /docs/controllers }
+      - { title: Responses, url: /docs/responses }
+      - { title: Routing, url: /docs/routing }
+  - title: Static Sites
+    links:
+      - { title: Setup, url: /docs/static-site-setup }
+      - { title: Page Data, url: /docs/static-page-data }
+      - { title: Page Template, url: /docs/static-page-template }
+      - { title: Preprocessing, url: /docs/static-page-preprocessing }
+  - title: Rendering
+    links:
+      - { title: Render Service, url: /docs/render-service }
+      - { title: Renderable Elements, url: /docs/renderable-elements }
+      - { title: Page Layout and Blocks, url: /docs/page-layout-and-blocks }
+      - { title: Rendering Engines, url: /docs/rendering-engines }
+  - title: React
+    links:
+      - { title: Server-Side Rendering, url: /docs/react-ssr }
+      - { title: Single Page Apps, url: /docs/react-spa }
+      - { title: React & GraphQL, url: /docs/react-graphql }
+  - title: GraphQL
+    links:
+      - { title: GraphQL Intro, url: /docs/graphql-intro }
+      - { title: Resolvers, url: /docs/graphql-resolvers }
+      - { title: Queries and Mutations, url: /docs/graphql-queries-mutations }
+      - { title: Subscriptions, url: /docs/graphql-subscriptions }
+      - { title: Interfaces and Unions, url: /docs/graphql-interfaces-unions }
+      - { title: Scalars, url: /docs/graphql-scalars }
+      - { title: Enums, url: /docs/graphql-enums }
+      - { title: Built-In Endpoints, url: /docs/graphql-endpoints }
+      - { title: Web Socket, url: /docs/graphql-web-socket }
+      - { title: Inner Workings, url: /docs/graphql-inner-workings }
+  - title: Advanced Guides
+    links:
+      - { title: WebSocket Controllers, url: /docs/websocket-controllers }
+      - { title: EventStream Controllers, url: /docs/eventstream-controllers }
+  - title: Services
+    links:
+      - { title: Date Formatter, url: /docs/date-formatter }
+      - { title: Property Decorators, url: /docs/property-decorators }
+  - title: Contributing
+    links:
+      - { title: How to Contribute, url: /contribute }

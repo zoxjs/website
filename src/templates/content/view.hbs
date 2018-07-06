@@ -1,0 +1,14 @@
+<div class="view {{#if mode}}view-{{mode}}{{/if}}">
+    {{#each items}}
+        <div class="view-item">{{{this}}}</div>
+    {{else}}
+        <p>No content</p>
+    {{/each}}
+</div>
+{{#if pager}}
+    {{> link pager.first }}
+    {{> link pager.prev }}
+    {{> link pager.current }}
+    {{> link pager.next }}
+    {{> link pager.last }}
+{{/if}}
