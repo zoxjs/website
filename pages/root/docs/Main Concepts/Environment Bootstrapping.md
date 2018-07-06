@@ -12,7 +12,7 @@ This requires us to load all of our plugins and setup all of our services
 before we can start our app.
 
 The built-in `bootstrap()` function should be sufficient for most use cases.  
-Here's how you can use it in your main.js file:
+Here's how you can use it in your dev.js file:
 
 ```typescript
 import {bootstrap, startServer} from "web-server/bootstrap";

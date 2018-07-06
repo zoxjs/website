@@ -11,7 +11,7 @@
     "highlight.js": "^9.12.0",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.3",
-    "zox": "^1.0.2",
+    "zox": "^1.0.8",
     "zox-handlebars": "^1.0.1",
     "zox-plugins": "^1.0.1"
   },
@@ -19,8 +19,9 @@
     "@types/node": "^10.5.2"
   },
   "scripts": {
-    "start": "node src/main.js",
+    "start": "node src/dev.js",
     "static": "node src/static.js",
+    "build": "node src/build.js",
     "build-js": "browserify src/frontend/main.js -o files/bundle.js -d",
     "build-js-min": "browserify src/frontend/main.js -o files/bundle.js -d | uglifyjs files/bundle.js --ecma 5 -o files/bundle.js",
     "watch-js": "watchify src/frontend/main.js -o files/bundle.js -d -v",

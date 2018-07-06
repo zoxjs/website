@@ -151,7 +151,7 @@ in order to avoid executing tens or hundreds of queries per request.
 ## Context
 
 Zox.js does not provide the `context` variable by default.
-Instead you are expected to set the function for generating the context from your main.js script.
+Instead you are expected to set the function for generating the context from your dev.js script.
 
 ```js
 container.get(IGraphQLService).contextGenerator = (request) =>

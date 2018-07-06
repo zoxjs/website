@@ -16,7 +16,7 @@ npm install web-server
 ```
 
 The goal of the web-server is to decentralize your code,
-so the only thing you should do in your main.js file is to bootstrap your project
+so the only thing you should do in your dev.js file is to bootstrap your project
 and start the server.
 
 ```typescript
