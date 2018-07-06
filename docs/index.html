@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>Home | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<header class="secondary text-center pad-lg">
+    <div class="container hero-text">
+        <h1 class="display-3 primary-color">Develop and publish with ease</h1>
+        <p class="lead">Zox.js gives developers the power to build scalable web apps and services</p>
+    </div>
+    <div class="home-buttons">
+        <a href="/docs" class="btn large-btn btn-get-started">Get Started</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row short-info">
+            <div class="col-md-4">
+                <h3>Templates and React</h3>
+                <p>Use your favorite templating engine combined with a powerful rendering pipeline.<br>
+Embed React into your pages to give them life.</p>
+<p>Built-in Server-side rendering for React will make your
+pages search engine friendly and let them load faster.</p>
+
+                <a href="/docs/render-service" class="btn large-btn">Learn More</a>
+            </div>
+            <div class="col-md-4">
+                <h3>Static Site Generation</h3>
+                <p>Write your blog posts in markdown or create general purpose pages in yaml.</p>
+<p>The data will simply be passed to your templates, no coding required.</p>
+<p>Using React instead of traditional templates is also possible.</p>
+
+                <a href="/docs/static-site-setup" class="btn large-btn">Learn More</a>
+            </div>
+            <div class="col-md-4">
+                <h3>GraphQL</h3>
+                <p>Create decoupled GraphQL resolvers in a similar way you would create REST controllers
+and let the built-in schema builder create the actual GraphQL schema for you.</p>
+<p>Subscribe to any GraphQL subscription endpoint via WebSocket or EventStream.</p>
+
+                <a href="/docs/graphql-intro" class="btn large-btn">Learn More</a>
+            </div>
+    </div>
+</div>
+
+<div class="container code-examples pad-md pad-md-top-not-first">
+        <div class="row">
+            <div class="col-lg-5">
+                <h3><b>A simple controller</b></h3>
+                <p>Controllers implement a <code>handle()</code> method that returns a <code>Response</code> object
+which will be in charge of sending the HTTP response.</p>
+<p>In this example we create a controller that returns a <code>StringResponse</code>
+and we assign a route to it.</p>
+
+            </div>
+            <div class="col-lg-7 code-container">
+                <div class="code-block">
+                    <h5 class="code-title">TypeScript</h5>
+                    <pre><code class="language-typescript">@Route({
+    route: &#x27;/page/hello-world&#x27;
+})
+export class MyPage implements IController
+{
+    public handle(): IResponse
+    {
+        return new StringResponse(&#x27;Hello World&#x27;);
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <h3><b>Page controller</b></h3>
+                <p>A <code>PageController</code> is a base controller class
+that returns our page in a <code>RenderResponse</code>.
+As the name suggests this class will render our template
+and add the required js, css and meta tags,
+before sending the response.</p>
+<p>In this example we create a new <code>Renderable</code> object,
+tell it which template to load
+and assign properties that will be passed to the template.</p>
+<p>Rendering engine is selected based on file extension.</p>
+
+            </div>
+            <div class="col-lg-7 code-container">
+                <div class="code-block">
+                    <h5 class="code-title">TypeScript</h5>
+                    <pre><code class="language-typescript">@Route({
+    route: &#x27;/page/hello-world&#x27;
+})
+export class MyPage extends PageController
+{
+    public page()
+    {
+        const renderable &#x3D; this.container.create(
+            Renderable,
+            &#x27;my-template-name&#x27;
+        );
+        renderable.text &#x3D; &#x27;Hello World&#x27;;
+        return renderable;
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <h3><b>A simple API</b></h3>
+                <p>Creating API endpoints is as simple as
+creating a controller that returns a <code>JsonResponse</code>.</p>
+<p>In this example we create a dynamic route
+that will let us select the user by <code>id</code>,
+we will then query the user from our mock users list.</p>
+
+            </div>
+            <div class="col-lg-7 code-container">
+                <div class="code-block">
+                    <h5 class="code-title">TypeScript</h5>
+                    <pre><code class="language-typescript">@Route({
+    route: &#x27;/api/user/:id&#x27;
+})
+export class MyApi extends Controller
+{
+    public handle(): IResponse
+    {
+        const data &#x3D; users.find(u &#x3D;&gt; u.id &#x3D;&#x3D; this.params.id);
+        return new JsonResponse(data);
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <h3><b>GraphQL resolvers</b></h3>
+                <p>With GraphQL we get to explicitly define types of
+inputs and outputs of our endpoints.</p>
+<p>In this example we define a top-level <code>Query</code> field called <code>user</code>
+that accepts one parameter <code>id</code> and return a <code>User</code> object.</p>
+
+            </div>
+            <div class="col-lg-7 code-container">
+                <div class="code-block">
+                    <h5 class="code-title">TypeScript</h5>
+                    <pre><code class="language-typescript">@Query(&#x27;user(id: ID!): User&#x27;, UserDef)
+export class UserQuery extends ResolverBase
+{
+    public resolve(root, args, context): Array&lt;UserData&gt;
+    {
+        return users.find(u &#x3D;&gt; u.id &#x3D;&#x3D; args.id);
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <h3><b>React SPA</b></h3>
+                <p>You can simply return a <code>ReactRenderable</code> with your <code>App</code> component
+and continue with your regular React workflow.</p>
+<p>Props can be used to preload data into frontend
+and combined with server-side renderig
+it will provide a smooth user experience.<br>
+Only props serializable using <code>JSON.stringify()</code> are supported.</p>
+
+            </div>
+            <div class="col-lg-7 code-container">
+                <div class="code-block">
+                    <h5 class="code-title">TypeScript</h5>
+                    <pre><code class="language-typescript">@Route({
+    route: &#x27;/react/hello-world&#x27;
+})
+export class MyReactPage extends PageController
+{
+    public page()
+    {
+        return this.container.create(
+            ReactRenderable,
+            &lt;App text&#x3D;&#x27;Hello World&#x27; /&gt;
+        );
+    }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="secondary text-center pad-sm">
+    <div class="home-buttons">
+        <a href="/docs" class="btn large-btn btn-get-started">Get Started</a>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

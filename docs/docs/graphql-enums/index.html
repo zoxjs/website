@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>GraphQL Enums | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>GraphQL Enums</h1>
+            
+            <div class="body"><p>Enums can be used to specify the range of values a field can have.</p>
+<p>You should only use enums for things you know will not change during runtime.</p>
+<p>For example days of the week (Monday - Sunday) would be easier
+to work with if they were stored as an enum instead of a number or a string.</p>
+<p>On the other hand things like user permission groups
+(Anonymous, Authenticated, Moderator, Owner, Admin)
+are better left as strings or numbers.<br>This is because in most CMS system the Admin can create or remove these groups on their site.<br>Of course if you do not intend to allow this to be changed by users
+(including the Admin user) it is ok to make it an enum.</p>
+<h2 id="there-are-2-ways-to-define-an-enum">There are 2 ways to define an enum</h2>
+<p>As a type definition, which has to be referenced by the resolvers that use it.<br>In this case the value seen by resolvers and the client are the same
+and that is the enum field name.</p>
+<pre><code class="language-typescript">export const WeekDayDef = `
+enum WeekDay {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+`;</code></pre>
+<p>If you wish to assign custom values to enum field you can define the enum as an <code>@Enum</code> plugin.
+In this case the client will see the field name and resolvers will see the assigned value.</p>
+<p>We can assign any number, string, boolean, object or even a function to enum fields.<br>The only invalid values are undefined and null.
+Other than that we just have to make sure we don&#39;t assign the same value to multiple fields,
+otherwise the client will always see the name of the first field with that value.</p>
+<p>An Enum only needs to have a <code>values</code> property containing <code>string: any</code> pairs.
+Values can be defined either as a get method or as a normal property.</p>
+<pre><code class="language-ts">@Enum(&#39;WeekDay&#39;)
+export class WeekDayEnum implements IEnum
+{
+    get values() {
+        return {
+            Monday: 1,
+            Tuesday: &#39;Tuesday&#39;,
+            Wednesday: true,
+            Thursday: { value: 4 },
+            Friday: 5.1,
+            Saturday: () =&gt; 6,
+            Sunday: 7,
+        };
+    };
+}
+
+@Enum(&#39;WeekDay&#39;)
+export class WeekDayEnum implements IEnum
+{
+    readonly values = {
+        Monday: 1,
+        Tuesday: &#39;Tuesday&#39;,
+        Wednesday: true,
+        Thursday: { value: 4 },
+        Friday: 5.1,
+        Saturday: () =&gt; 6,
+        Sunday: 7,
+    };
+}
+
+// the above version is a shorthand for:
+
+@Enum(&#39;WeekDay&#39;)
+export class WeekDayEnum implements IEnum
+{
+    readonly values;
+
+    constructor() {
+        this.values = {
+            Monday: 1,
+            Tuesday: &#39;Tuesday&#39;,
+            Wednesday: true,
+            Thursday: { value: 4 },
+            Friday: 5.1,
+            Saturday: () =&gt; 6,
+            Sunday: 7,
+        };
+    }
+}</code></pre>
+<p>Like all other graphql plugins the <code>@Enum</code> plugins can declare dependencies to access services.
+But unlike other plugins the instances of <code>@Enum</code> plugins are only used once at startup.</p>
+<p>If you want to load the enum values from a database
+you should load those values before building the schema,
+because the values are read and used synchronously.</p>
+<p>If you wish to reload enum names or values you will have to rebuild the entire schema.</p>
+<p>If you wish to make enum value dynamic you can either assign a function as the value,
+where the function would return the actual value;<br>Or assign an object with a value property eg: <code>{ value: string }</code>
+and alter it&#39;s value property when the actual value changes.</p>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li class="current"><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/graphql-scalars">Scalars</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/graphql-endpoints">Built-In Endpoints</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

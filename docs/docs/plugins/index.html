@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>Plugins | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>Plugins</h1>
+            
+            <div class="body"><p>Whenever you need extensible and flexible code
+you will be faced with several ways of implementing it.
+One of them is by using Plugins!<br>Here we will see how to use plugins
+and how they compare to more common ways of dealing with this problem.</p>
+<p>Lets look at a case where we have to either add or multiply 2 numbers.</p>
+<pre><code class="language-js">function calc(args)
+{
+    if (args.operation === &#39;add&#39;)
+    {
+        return args.A + args.B;
+    }
+    if (args.operation === &#39;multiply&#39;)
+    {
+        return args.A * args.B;
+    }
+}</code></pre>
+<p>Seems simple. Whenever we want to add a new operation we just add another <code>if</code> statement.</p>
+<p>But keeping all of our code in a single function
+will quickly lead to the function having 100-s of lines of code,
+so we will need to split it up.</p>
+<pre><code class="language-js">function calc(args)
+{
+    if (args.operation === &#39;add&#39;)
+    {
+        return add(args);
+    }
+    if (args.operation === &#39;multiply&#39;)
+    {
+        return multiply(args);
+    }
+}</code></pre>
+<p>Ok now we can split our functionality into multiple files,
+which will make version control easier.</p>
+<p>But we still need to change the main function code whenever we need a new option.<br>This can be easily solved by creating an option list.</p>
+<pre><code class="language-js">const operations = [
+    { operation: &#39;add&#39;, func: add },
+    { operation: &#39;multiply&#39;, func: multiply },
+];
+
+function calc(args)
+{
+    for (const op of operations)
+    {
+        if (op.operation === args.operation)
+        {
+            return op.func(args);
+        }
+    }
+}</code></pre>
+<p>This is basically how plugins themselves work,
+except that the <code>plugin-system</code> is heavily object-oriented
+meaning that all plugins must be classes.</p>
+<h2 id="creating-plugins">Creating Plugins</h2>
+<p>First we will need to define a new plugin type.</p>
+<p>JavaScript:</p>
+<pre><code class="language-js">const pluginKey = Symbol(&#39;My Plugin&#39;);
+
+export function MyPlugin(options)
+{
+    return PluginSetup(pluginKey, options);
+}</code></pre>
+<p>TypeScript:</p>
+<pre><code class="language-ts">const pluginKey = Symbol(&#39;My Plugin&#39;);
+
+export type MyArgs = { A: number, B: number }
+
+export interface IMyPlugin
+{
+    calc(args: MyArgs): number;
+}
+
+export function MyPlugin(options: MyPluginOptions)
+{
+    return PluginSetup&lt;IMyPlugin, MyPluginOptions&gt;(pluginKey, options);
+}</code></pre>
+<p>We can then define our plugins anywhere in our project.</p>
+<p>JavaScript:</p>
+<pre><code class="language-js">export class AddPlugin
+{
+    calc(args)
+    {
+        return args.A + args.B;
+    }
+}
+MyPlugin({ operation: &#39;add&#39; })(AddPlugin);</code></pre>
+<p>TypeScript:</p>
+<pre><code class="language-ts">@MyPlugin({ operation: &#39;add&#39; })
+export class AddPlugin implements IMyPlugin
+{
+    calc(args: MyArgs): number
+    {
+        return args.A + args.B;
+    }
+}</code></pre>
+<p>It is also possible to simplify plugin options
+from <code>MyPlugin({ operation: &#39;add&#39; })</code> to <code>MyPlugin(&#39;add&#39;)</code>.
+This is fine in simpler use cases,
+but using an object instead of an argument list
+gives us a chance to easily change plugin options
+without refactoring old code.</p>
+<p>Now we can scan our project to load all of the plugins,
+more on this subject later,
+and use them in the function from the previous example.</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+// ...
+
+function calc(args)
+{
+    const pluginDefinitions = pluginDiscovery.getPlugins(pluginKey);
+    for (const pluginDefinition of pluginDefinitions)
+    {
+        if (pluginDefinition.data.operation === args.operation)
+        {
+            return new pluginDefinition.pluginClass().calc(args);
+        }
+    }
+}</code></pre>
+<p>It can be useful to instantiate our plugins in advance,
+so that our main function would perform better.</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+// ...
+
+const myPlugins = {};
+const pluginDefinitions = pluginDiscovery.getPlugins(pluginKey);
+for (const pluginDefinition of pluginDefinitions)
+{
+    myPlugins[pluginDefinition.data.operation] =
+        new pluginDefinition.pluginClass();
+}
+
+function calc(args)
+{
+    if (args.operation in myPlugins)
+    {
+        return myPlugins[args.operation].calc(args);
+    }
+}</code></pre>
+<p>In this simplistic example we did not need classes,
+but the <code>plugin-system</code> was targeted for plugins
+which require setup, in form of passing props
+either through the constructor
+or by assigning the object properties directly,
+before they can be used.</p>
+<p>Also in many use cases it is not enough
+to have a single instance of the plugin,
+for example Controller plugins are instantiated per request.</p>
+<h2 id="plugin-discovery">Plugin Discovery</h2>
+<p>For our plugins to be available to us we first need to load them.</p>
+<p>Of course it is also possible to manually add them.</p>
+<p>You can do it like this if you used decorators
+to assign the plugins to the class:</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+pluginDiscovery.scan(MyClass);</code></pre>
+<p>Or like this if you haven&#39;t:</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+pluginDiscovery.addPlugin(pluginKey, MyClass, options);</code></pre>
+<p>But the preferred way is to scan your project for plugins.</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+await pluginDiscovery.scanProject();</code></pre>
+<p>To scan your project you will have to specify
+the target directories and/or files in your package.json file, like this:</p>
+<pre><code class="language-js">{
+  &quot;plugins&quot;: {
+    &quot;dirs&quot;: [ // to scan all modules in these folders
+      &quot;src/Plugins&quot;
+    ],
+    &quot;files&quot;: [ // alternatively you can explicitly specify modules to scan
+      &quot;src/Plugins/MyModule&quot;,
+      &quot;src/Plugins/Folder/AnotherModule&quot;
+    ]
+  }
+}</code></pre>
+<p>As for <code>node_modules</code> folder you have a few ways of scanning it.<br>You can simply scan all of the included packages:</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+await pluginDiscovery.scanNodeModules();</code></pre>
+<p>Or manually select the packages you want to scan:</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+await pluginDiscovery.scanProject(&#39;node_modules/zox&#39;);</code></pre>
+<p>On a more granular level you can scan directories:</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+await pluginDiscovery.scanDirectory(&#39;Plugins&#39;);</code></pre>
+<p>Which can be useful if you don&#39;t want to specify
+the plugins folder in the package.json file.</p>
+<p>Or you can scan module files:</p>
+<pre><code class="language-js">const pluginDiscovery = new PluginDiscovery();
+pluginDiscovery.scanModule(require(&#39;zox&#39;));</code></pre>
+<p>It&#39;s also possible to clear the plugin list:</p>
+<pre><code class="language-js">pluginDiscovery.clear(); // clear all plugins
+pluginDiscovery.clear(pluginKey); // clear plugins of this type</code></pre>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li class="current"><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/single-file-example">Single File Example</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/services">Services</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

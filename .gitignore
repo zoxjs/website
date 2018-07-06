@@ -11,4 +11,3 @@ src/**/*.js.map
 
 # Static Files
 files/*
-static/*

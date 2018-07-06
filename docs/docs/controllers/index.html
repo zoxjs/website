@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>Controllers | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>Controllers</h1>
+            
+            <div class="body"><p>The role of the controller is to generate a response to a request.</p>
+<p>The most basic controller simply returns a static response:</p>
+<pre><code class="language-ts">export class MyController implements IController
+{
+    public handle(request: IncomingMessage): MaybePromise&lt;IResponse&gt;
+    {
+        return new StringResponse(&#39;Hello World&#39;);
+    }
+}</code></pre>
+<p>You can also access the url query parameter:</p>
+<pre><code class="language-ts">export class MyController implements IController
+{
+    public handle(request: IncomingMessage): MaybePromise&lt;IResponse&gt;
+    {
+        if (&#39;q&#39; in this.query)
+        {
+            return new StringResponse(&#39;You searched for: &#39; + this.query[&#39;q&#39;]);
+        }
+        return new StringResponse(&#39;Missing query parameter &quot;q&quot;&#39;);
+    }
+}</code></pre>
+<p>In most cases controllers will be bound to routes.</p>
+<pre><code class="language-ts">@Route({
+    // the default method is &#39;get&#39;
+    method: &#39;get&#39;,
+    route: &#39;/my/path&#39;
+})
+export class MyController implements IController
+{
+    public handle(request: IncomingMessage): MaybePromise&lt;IResponse&gt;
+    {
+        return new StringResponse(&#39;Hello World&#39;);
+    }
+}</code></pre>
+<p>The same controller can be bound to any number of routes
+and you can read the requested URL from <code>request.url</code>.</p>
+<p>Routes can also be dynamic and in that case the dynamic parts
+will be set in the <code>props</code> property.</p>
+<pre><code class="language-ts">@Route({
+    route: &#39;/my/path/:category/:name&#39;
+})
+export class MyController implements IController
+{
+    public handle(request: IncomingMessage): MaybePromise&lt;IResponse&gt;
+    {
+        // in case of url: /my/path/event/my-party
+        this.props.category === &#39;event&#39;
+        this.props.name === &#39;my-party&#39;
+    }
+}</code></pre>
+<p>If the route has no dynamic parts then the <code>props</code> property will be <code>undefined</code>.</p>
+<p>You can learn more about routing <a href="/docs/routing">here</a>.</p>
+<h2 id="base-controller-classes">Base controller classes</h2>
+<p>To present a HTML page we would create a <code>Renderable</code> element
+and returning it in a <code>RenderResponse</code>.</p>
+<pre><code class="language-ts">export class MyPageController implements IController
+{
+    @Dependency
+    private container: ISrviceContainer;
+
+    public handle(request: IncomingMessage): MaybePromise&lt;IResponse&gt;
+    {
+        const renderable = this.container.create(Renderable, &#39;my-template-name&#39;);
+        return this.container.create(RenderResponse, renderable);
+    }
+}</code></pre>
+<p><code>PageController</code> was introduced to make this easier.</p>
+<pre><code class="language-ts">export class MyPageController extends PageController
+{
+    public page(request)
+    {
+        return this.container.create(Renderable, &#39;my-template-name&#39;);
+    }
+}</code></pre>
+<p>In case of <code>post</code> and <code>put</code> requests you will also have access to request body.<br>You can select an appropriate base class based on the type of data you&#39;re handling.</p>
+<p>If you&#39;re developing an API endpoint you should use the <code>JsonController</code>.</p>
+<pre><code class="language-ts">export class MyApiController extends JsonController
+{
+    public handleJson(request, json)
+    {
+        return new JsonResponse({ status: &#39;OK&#39; });
+    }
+}</code></pre>
+<p>If you are handling a HTML form you should use the <code>FormController</code>.</p>
+<pre><code class="language-ts">export class MyFormController extends FormController
+{
+    public handleForm(request, form)
+    {
+        return new RedirectResponse(&#39;/back/to/previous/page&#39;);
+    }
+}</code></pre>
+<p>The <code>FormPageController</code> was specially created for controllers that
+handle both displaying a page and handling form data.</p>
+<pre><code class="language-ts">export class MyFormPageController extends FormPageController
+{
+    public page(request, form?, error?: string)
+    {
+        return this.container.create(Renderable, &#39;my-template-name&#39;);
+    }
+}</code></pre>
+<p>In case of <code>post</code> and <code>put</code> requests you would either get the <code>form</code> or <code>error</code> argument
+depending on whether form data was successfully parsed or not.</p>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li class="current"><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/config">Configuration</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/responses">Responses</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

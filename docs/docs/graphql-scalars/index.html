@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>GraphQL Scalars | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>GraphQL Scalars</h1>
+            
+            <div class="body"><p>Scalars are used to move parsing, validation and serialization of data types out from resolvers.</p>
+<p>Scalars have 3 methods:</p>
+<p><code>serialize(value)</code> converts a object to a string, number or boolean.<br>This value comes from our resolvers and the result is sent to the client.</p>
+<p><code>parseValue(value)</code> converts a string, number or boolean to an object.<br>This value comes from the client and the result is passed to the resolver.</p>
+<p><code>parseLiteral(valueNode, variables?)</code> coverts AST ValueNode to an object.<br>The value is defined in the query and we are given the parsed AST representation
+containing:<br><code>{ kind: string, value: string }</code><br>The variables can be accessed here as well, if any are provided.</p>
+<p>All of 3 these methods can return <code>undefined</code> (or not return anything) to indicate an invalid value.
+Or an Error can be thrown to show a custom error message.</p>
+<h2 id="date-scalar">Date Scalar</h2>
+<p>Date is probably the most used non-standard scalar
+and graphql-system comes with a built-in version
+that serializes Date objects as the number of milliseconds since 1 January, 1970 UTC.</p>
+<p>This is also a great template for creating new custom scalars.</p>
+<pre><code class="language-ts">export const DateDef = `
+scalar Date
+`;
+
+@Scalar(&#39;Date&#39;, DateDef)
+export class DateScalar implements IScalar&lt;Date, number&gt;
+{
+    public serialize(value: Date): number
+    {
+        return value.valueOf();
+    }
+
+    public parseValue(value: number): Date | void
+    {
+        if (typeof value === &#39;number&#39;)
+        {
+            return new Date(value);
+        }
+    }
+
+    public parseLiteral(valueNode: ValueNode, variables?: { [p:string]: any }): Date | void
+    {
+        if (valueNode.kind === Kind.INT)
+        {
+            const value = parseInt(valueNode.value);
+            if (!isNaN(value))
+            {
+                return new Date(value);
+            }
+        }
+    }
+}</code></pre>
+<h2 id="regexp-scalar">RegExp Scalar</h2>
+<p>Regular expressions are great for filtering data,
+so graphql-system comes with a built-in version of this scalar.</p>
+<p>The serialized type is a string and it can use one of 2 formats:</p>
+<ul>
+<li><code>&quot;/regexp?/g&quot;</code> version with slashes allows us to add modifiers</li>
+<li><code>&quot;regexp?&quot;</code> version without modifiers</li>
+</ul>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li class="current"><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/graphql-enums">Enums</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

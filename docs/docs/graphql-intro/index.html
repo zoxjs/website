@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>GraphQL Intro | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>GraphQL Intro</h1>
+            
+            <div class="body"><p>Zox.js was created with one goal in mind: <strong>Making scalable systems</strong><br>And this can easily be seen in the <code>graphql-system</code>.</p>
+<p>To start developing GrapQL API we need to add the package to our project:</p>
+<pre><code class="language-bash">npm i graphql-system</code></pre>
+<p>Lets start by defining a data type. Create a file called <code>User.ts</code></p>
+<pre><code class="language-typescript">// GraphQL type:
+
+export const UserDef = `
+type User
+{
+  id: ID!
+  name: String
+  subscribedTo: [User]
+}
+`;
+
+// TypeScript types corresponding to the database tables:
+
+export type User = {
+    id: number
+    name: string
+};
+
+export type UserSubscription = {
+    userId: number
+    subscribedToUserId: number
+};
+
+// TypeScript type corresponding to our output
+
+export type UserData = {
+    id: number
+    name: string
+    subscribedTo: Array&lt;UserData&gt;
+};</code></pre>
+<p>In our example GraphQL will expect the User type to have a list of subscriptions,
+but in our database this is stored in a separate table.</p>
+<p>So we will have to write a resolver to fetch this additional data.<br>We will then also have to define a top level query field, to make the user data available.<br>In the following example we will use mocked versions of our <em>users</em> and <em>subscriptions</em> tables.</p>
+<p>Create a file called <code>UserResolvers.ts</code></p>
+<pre><code class="language-typescript">import {Query, Resolver, ResolverBase} from &quot;graphql-system&quot;;
+import {UserData, User, UserSubscription, UserDef} from &quot;./User&quot;;
+import {users, subscriptions} from &quot;./MockUserData&quot;;
+
+@Resolver(&#39;User&#39;, &#39;subscribedTo&#39;, UserDef)
+export class UsersQuery extends ResolverBase
+{
+    public resolve(thisUser, args, context): Array&lt;UserData&gt;
+    {
+        return subscriptions
+        // filter only subscriptions of this user
+        .filter(s =&gt; s.userId == thisUser.id)
+        // load users to which this user is subscribed to
+        .map(s =&gt; users.find(u =&gt; u.id == s.subscribedToUserId));
+    }
+}
+
+@Query(&#39;user(id: ID!): User&#39;, UserDef)
+export class UserQuery extends ResolverBase
+{
+    public resolve(root, args, context): Array&lt;UserData&gt;
+    {
+        return users.find(u =&gt; u.id == args.id);
+    }
+}</code></pre>
+<p>Here we define a <code>Resolver</code> for the <code>subscribedTo</code> field of the <code>User</code> type
+where we define how to load the contents for this field.<br>Then we define a top level <code>Query</code> field called <code>user</code>
+that takes one required argument <code>id</code>
+which we use to try to find the requested data.</p>
+<p>In both cases we referenced the GraphQL type definition <code>UserDef</code>,
+which will be used by <code>graphql-system</code> to generate the schema.<br>It is important to reference all of the type definitions
+related to each of our resolvers,
+in order to make sure they are all included in the final schema.</p>
+<p>Here&#39;s how a request to our new GraphQL schema might look like:</p>
+<pre><code class="language-graphql">{
+  user(id: 5) {
+    id
+    name
+    subscribedTo {
+      id
+      name
+    }
+  }
+}</code></pre>
+<p>Or if you want to make the <code>id</code> parameter dynamic:</p>
+<pre><code class="language-graphql">query($id: ID!){
+  user(id: $id) {
+    id
+    name
+    subscribedTo {
+      id
+      name
+    }
+  }
+}</code></pre>
+<p>We could also exclude the <code>subscribedTo</code> field from the query:</p>
+<pre><code class="language-graphql">query($id: ID!){
+  user(id: $id) {
+    id
+    name
+  }
+}</code></pre>
+<p>In which case the resolver for the <code>subscribedTo</code> field will not execute
+and we will avoid executing an unnecessary query.</p>
+<p>The examples here are very simplified.
+In production you will want to use a data loader
+to combine all your queries into one or two,
+in order to avoid executing tens or hundreds of queries per request.</p>
+<h2 id="context">Context</h2>
+<p>Zox.js does not provide the <code>context</code> variable by default.
+Instead you are expected to set the function for generating the context from your dev.js script.</p>
+<pre><code class="language-js">container.get(IGraphQLService).contextGenerator = (request) =&gt;
+{
+    return { /* ... */ };
+};</code></pre>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li class="current"><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/react-graphql">React &amp; GraphQL</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/graphql-resolvers">Resolvers</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

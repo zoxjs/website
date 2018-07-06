@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>Property Decorators | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>Property Decorators</h1>
+            
+            <div class="body"><p>To make writing static pages easier we need a way to preprocess our data.
+In zox.js this is done using Property Decorators.</p>
+<h2 id="default-decorators">Default decorators</h2>
+<p>The most commonly used decorators are included by default:</p>
+<ul>
+<li><code>md</code> compiles <code>markdown</code> text</li>
+<li><code>nl2br</code> converts new lines to <code>&lt;br&gt;</code> tags</li>
+<li><code>upper</code> converts text to upper case</li>
+<li><code>lower</code> converts text to lower case</li>
+<li><code>date</code> parses a string or number to a Date object</li>
+<li><code>sort</code> sorts an array by the selected property</li>
+<li><code>reverse</code> reverses the order of items in an array</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>The main way of writing content for static pages in zox.js is in markdown.
+But markdown text needs to be compiled to html before it is used in templates.<br>This is where the <code>.md</code> decorator comes in.</p>
+<p>Lets look at an example where we have a list of cards with feature names and their descriptions:</p>
+<pre><code class="language-yaml">title: Title
+url: /my/path
+cards:
+  - title: First Feature
+    text.md: |-
+      Lorem ipsum **dolor** sit amet.
+
+      Consectetur `adipiscing elit` sed do.
+  - title: Second Feature
+    text.md: |-
+      Eiusmod tempor incididunt.
+
+      Ut labore et dolore magna aliqua.</code></pre>
+<p>After preprocessing property decorators our data would be equivalent to this:</p>
+<pre><code class="language-yaml">title: Title
+url: /my/path
+cards:
+  - title: First Feature
+    text: |-
+      &lt;p&gt;Lorem ipsum &lt;strong&gt;dolor&lt;/strong&gt; sit amet.&lt;/p&gt;
+      &lt;p&gt;Consectetur &lt;code&gt;adipiscing elit&lt;/code&gt; sed do.&lt;/p&gt;
+  - title: Second Feature
+    text: |-
+      &lt;p&gt;Eiusmod tempor incididunt.&lt;/p&gt;
+      &lt;p&gt;Ut labore et dolore magna aliqua.&lt;/p&gt;</code></pre>
+<p>We just saved ourselves some time on typing and kept our source text readable.</p>
+<p>As a simpler alternative to markdown there is a <code>.nl2br</code> decorator
+that converts new line characters to <code>&lt;br&gt;</code> tags,
+which can be useful if you don&#39;t have to have <code>&lt;p&gt;</code> tags in your result.</p>
+<pre><code class="language-yaml">text.nl2br: |-
+  Lorem ipsum
+  dolor sit amet</code></pre>
+<p>Would become:</p>
+<pre><code class="language-yaml">text: Lorem ipsum&lt;br&gt;dolor sit amet</code></pre>
+<p>The <code>.sort</code> decorator is more complex, since it requires parameters.</p>
+<ul>
+<li>order: ASC or DSC</li>
+<li>orderBy: property in items</li>
+<li>items: array of object</li>
+</ul>
+<p>Here&#39;s an example:</p>
+<pre><code class="language-yaml">item.sort:
+  order: asc
+  orderBy: title
+  items:
+    - title: Lorem ipsum
+      text: ...
+    - title: Dolor sit amet
+      text: ...
+    - title: Eiusmod tempor
+      text: ...</code></pre>
+<p>Would be converted to:</p>
+<pre><code class="language-yaml">item:
+  - title: Dolor sit amet
+    text: ...
+  - title: Eiusmod tempor
+    text: ...
+  - title: Lorem ipsum
+    text: ...</code></pre>
+<h2 id="decorator-chaining">Decorator Chaining</h2>
+<p>Multiple decorators can be used on the same property.</p>
+<p>For example:</p>
+<pre><code class="language-yaml">text.upper.md: My **bold** text</code></pre>
+<p>Would be converted to:</p>
+<pre><code class="language-yaml">text: MY &lt;strong&gt;BOLD&lt;/strong&gt; TEXT</code></pre>
+<p>The decorators are executed from left to right.</p>
+<h2 id="custom-property-decorators">Custom property decorators</h2>
+<p>Property decorators take a single parameter, the property value
+and they return a new value for that field.</p>
+<pre><code class="language-ts">@PropertyDecorator(&#39;upper&#39;)
+export class UpperPropertyDecorator implements IPropertyDecorator
+{
+    public decorate(property: string): string
+    {
+        return property.toUpperCase();
+    }
+}</code></pre>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li class="current"><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/date-formatter">Date Formatter</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

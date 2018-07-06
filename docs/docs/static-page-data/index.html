@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>Static Page Data | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>Static Page Data</h1>
+            
+            <div class="body"><p>One of the goals of static sites is creating web pages
+with as little works as possible.
+And zox.js aims to provide you with a seamless experience
+when developing static sites.</p>
+<p>The default directory structure looks like this:</p>
+<pre><code class="language-yaml">pages:
+  root: Each file will represent a unique page
+  partials: Data which can be included in pages</code></pre>
+<p>You can start by creating a new page in the root pages directory.<br>Pages can have either <strong>.yaml</strong> ( <strong>.yml</strong> ) or <strong>.md</strong> extension.</p>
+<p>If your static pages share data (eg: a sidebar)
+you can create that as a partial and <code>include</code> it in pages that require it.<br>Partials can only have a <strong>.yaml</strong> ( <strong>.yml</strong> ) extension.</p>
+<blockquote>
+<p><strong>Note</strong><br>It&#39;s also possible to use <strong>json</strong> file format for static pages and partials,
+but <strong>yaml</strong> is far more practical for humans to work with,
+so you likely wont ever use <strong>.json</strong> files here.</p>
+</blockquote>
+<h2 id="built-in-fields">Built-In Fields</h2>
+<p>All pages must at least contain a title field,
+but will usually contain a few others.<br>Here&#39;s a basic yaml page example:</p>
+<pre><code class="language-yaml"># built-in fields
+title: My Page
+url: /my/page/path
+date: 2020 Jun 16
+type: event
+include:
+  - sidebar/event-list # path to your partial
+
+# custom fields
+myText: ...
+sections:
+- hero:
+    text: ...
+    subText: ...</code></pre>
+<p>You can add any other fields and they will all be available to the template.</p>
+<p>Thanks to <code>Property Decorators</code> it is also possible
+to embed markdown into your yaml pages like so:</p>
+<pre><code class="language-yaml">title: My Page
+url: /my/page/path
+
+myText.md: |-
+  Markdown is great because it lets you
+  easily create paragraphs and _style_ the text.
+
+  This is achieved simply by adding `.md`
+  at the end of the field name.
+
+  You can then print rendered markdown in your templates
+  the same way as any other field
+
+  {{{ myText }}}</code></pre>
+<p>You can learn more about this <code>Property Decorator</code>
+and others <a href="/docs/property-decorators">here</a>.</p>
+<p>But it is impractical to very write long text this way
+since you don&#39;t get the luxury of a syntax highlighting
+and if you&#39;re writing blog posts you&#39;ll probably going to have
+only a single text field with all of the markdown text in it.</p>
+<h2 id="enter-markdown-pages">Enter markdown pages</h2>
+<p>Markdown pages can also contain all of the same fields as yaml pages
+but are at the same time more practical for content editors to write.</p>
+<pre><code class="language-yaml">---
+# built-in fields
+title: My Page
+url: /my/page/path
+date: 2020 Jun 16
+type: event
+include:
+  - sidebar/event-list # path to your partial
+
+# custom fields
+myText: ...
+---
+
+Your regular `markdown` text goes below.</code></pre>
+<p>Here are the rules for the built-in fields:</p>
+<ul>
+<li>The only required field is the <code>title</code></li>
+<li>If <code>url</code> is not specified then it is generated from the <code>title</code> field
+and the file path relative to the root pages directory
+without the base file name</li>
+<li>On .md pages the markdown text will be parsed and assigned to the <code>body</code> field</li>
+<li>If the <code>date</code> is specified then it will be wrapped with <code>new Date()</code>,
+you can then assign the date format in the template</li>
+<li>On markdown pages the <code>body</code> property is reserved for page content</li>
+<li>If the page <code>type</code> is specified then this will be added to the template name;<br>eg: if <code>type</code> is <code>event</code> then the template candidate would be <code>static-page-event.{ext}</code></li>
+<li>If <code>include</code> is specified and is an Array
+then the requested partial will be copied into this page;<br>If <code>include</code> is specified and is an Object
+then the requested partial will be copied into this page under the named field</li>
+<li>If <code>meta</code> is specified then those meta tags are added to the html head</li>
+<li>Alternatively you can specify <code>__head</code> to assign raw text to the html head</li>
+<li>All other props are passed to the template as-is</li>
+</ul>
+<p>These pages will use the template called
+<code>static-page-{type}.{ext}</code> if page type is specified or
+<code>static-page.{ext}</code> if it is not.</p>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li class="current"><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/static-site-setup">Setup</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/static-page-template">Page Template</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>

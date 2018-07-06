@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" href="/~/jquery/dist/jquery.slim.min.js" as="script">
+<link rel="preload" href="/~/popper.js/dist/umd/popper.min.js" as="script">
+<link rel="preload" href="/~/bootstrap/dist/js/bootstrap.min.js" as="script">
+<link rel="preload" href="/bundle.js" as="script">
+
+<title>Renderable Elements | Zox.JS</title>
+<link rel="stylesheet" href="/~/bootstrap/dist/css/bootstrap.min.css" >
+<link rel="stylesheet" href="/~/highlight.js/styles/vs2015.css" >
+<link rel="stylesheet" href="/bundle.css" >
+
+
+</head>
+<body >
+<nav class="navbar navbar-expand-sm navbar-dark primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Zox.JS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/docs">Docs</a>
+                    </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/versions">v0.1.0</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/zoxjs/zox">GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="navbar-spacing primary"></div>
+<div class="container">
+    <div class="row">
+
+        <div class="article col-md-8 pad-lg">
+            <h1>Renderable Elements</h1>
+            
+            <div class="body"><p>Renderable Elements were introduced to make templates easy to preprocess and compose.</p>
+<p>In general you should not need to call the
+<a href="/docs/render-service">render service</a> directly,
+but instead create a <code>Renderable</code> element and let it do it for you.</p>
+<p>The <code>Renderable</code> class can be used directly, like this:</p>
+<pre><code class="language-js">const renderable = this.container.create(Renderable, &#39;my-template&#39;);
+renderable.title = &#39;My Title&#39;;
+renderable.body = &#39;Hellp World&#39;;</code></pre>
+<p>Here we created a new Renderable object and we set &#39;my-template&#39; as it&#39;s type,
+which is also going to be used as the template name.
+Then we assigned arbitrary properties to it.</p>
+<p>Assuming we use Handlebars our template would be called
+<code>my-template.hbs</code> and we will be able to directly access
+the properties of our Renderable object like this:</p>
+<pre><code class="language-handlebars">&lt;div&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;p&gt;{{body}}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+<h2 id="nesting">Nesting</h2>
+<p>It&#39;s also possible to nest templates simply by creating child <code>Renderable</code> elements:</p>
+<pre><code class="language-js">const renderable = this.container.create(Renderable, &#39;my-template&#39;);
+renderable.title = this.container.create(Renderable, &#39;my-template-title&#39;);
+renderable.body =  this.container.create(Renderable, &#39;my-template-body&#39;);
+renderable.title.text = &#39;My Title&#39;;
+renderable.body.text = &#39;Hellp World&#39;;</code></pre>
+<p>We can still write a single template like we did before:</p>
+<p><code>my-template.hbs</code></p>
+<pre><code class="language-handlebars">&lt;div&gt;
+    &lt;h1&gt;{{title.text}}&lt;/h1&gt;
+    &lt;p&gt;{{body.text}}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+<p>But we will also be able to split it into 3 separate templates</p>
+<p><code>my-template.hbs</code></p>
+<pre><code class="language-handlebars">&lt;div&gt;
+    {{title}}
+    {{body}}
+&lt;/div&gt;</code></pre>
+<p><code>my-template-title.hbs</code></p>
+<pre><code class="language-handlebars">&lt;h1&gt;{{text}}&lt;/h1&gt;</code></pre>
+<p><code>my-template-body.hbs</code></p>
+<pre><code class="language-handlebars">&lt;p&gt;{{text}}&lt;/p&gt;</code></pre>
+<p>And we will get exactly the same result.</p>
+<h2 id="custom-renderable-elements">Custom Renderable Elements</h2>
+<p><code>Renderable</code> elements are useful on their own,
+but to take full advantage of them you should create a custom class
+that extends <code>Renderable</code> and takes props through the constructor.</p>
+<pre><code class="language-ts">import {Renderable} from &quot;web-server/Renderable&quot;;
+
+export type Props = {
+    displayMode: &#39;full&#39; | &#39;teaser&#39; | &#39;sidebar&#39;
+    id: string
+    title: string
+    body: string
+}
+
+export class RenderablePost extends Renderable
+{
+    public readonly displayMode: string;
+    public readonly id: string;
+    public readonly title: string;
+    public readonly body: string;
+
+    constructor(props: Props)
+    {
+        super(&#39;post&#39;);
+        this.displayMode = props.displayMode;
+        this.id = props.id;
+        this.title = props.title;
+        this.body = props.body;
+    }
+}</code></pre>
+<p>This will let us validate and preprocess the props
+before they are used in the template.</p>
+<p>But the real power here is the ability to use computed props
+and allow multiple possible template names.</p>
+<p>Lets create a simple excerpt for our post.
+This could be used in the teaser mode for the post
+when displaying the list of latest posts.</p>
+<pre><code class="language-ts">export class RenderablePost extends Renderable
+{
+    public get excerpt(): string
+    {
+        // Return the first 100 characters.
+        // In practice you will probably want
+        // to return the first paragraph instead,
+        // but that in beyond the scope of this tutorial.
+        return this.body.substr(0, 100);
+    }
+}</code></pre>
+<p>And lets add a dynamic name to our template name list.</p>
+<pre><code class="language-ts">export class RenderablePost extends Renderable
+{
+    public templateCandidates()
+    {
+        const candidates = super.templateCandidates();
+        candidates.push(&#39;post-&#39; + this.displayMode);
+        return candidates;
+    }
+}</code></pre>
+<p>Now depending on the display mode
+the element will be rendered by one of these templates
+<code>post-full.hbs</code>, <code>post-teaser.hbs</code> or <code>post-sidebar.hbs</code>,
+or if the template does not exist for the selected display mode
+we would fall back to the generic <code>post.hbs</code> template.</p>
+<p>The primary use case for this is using a different template 
+depending on where you are showing your data.</p>
+<p>The <code>post-full.hbs</code> would be used to display the entire post content</p>
+<pre><code class="language-handlebars">&lt;div id=&quot;post-{{id}}&quot; class=&quot;post post-full&quot;&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;div&gt;{{{body}}}&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>The <code>post-teaser.hbs</code> could be used for a list of latest posts:</p>
+<pre><code class="language-handlebars">&lt;div id=&quot;post-teaser-{{id}}&quot; class=&quot;post post-teaser&quot;&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;div&gt;{{{excerpt}}}&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+<p>The <code>post-sidebar.hbs</code> could be used for suggested post in the sidebar:</p>
+<pre><code class="language-handlebars">&lt;div id=&quot;post-sidebar-{{id}}&quot; class=&quot;post post-sidebar&quot;&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+&lt;/div&gt;</code></pre>
+</div>
+        </div>
+
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3 pad-lg">
+            <div id="sidebar">
+                    <h4>Introduction</h4>
+                    <ul>
+                            <li><a href="/docs">Get Started</a></li>
+                            <li><a href="/docs/single-file-example">Single File Example</a></li>
+                    </ul>
+                    <h4>Main Concepts</h4>
+                    <ul>
+                            <li><a href="/docs/plugins">Plugins</a></li>
+                            <li><a href="/docs/services">Services</a></li>
+                            <li><a href="/docs/environment-bootstrapping">Environment Bootstrapping</a></li>
+                            <li><a href="/docs/config">Configuration</a></li>
+                            <li><a href="/docs/controllers">Controllers</a></li>
+                            <li><a href="/docs/responses">Responses</a></li>
+                            <li><a href="/docs/routing">Routing</a></li>
+                    </ul>
+                    <h4>Static Sites</h4>
+                    <ul>
+                            <li><a href="/docs/static-site-setup">Setup</a></li>
+                            <li><a href="/docs/static-page-data">Page Data</a></li>
+                            <li><a href="/docs/static-page-template">Page Template</a></li>
+                            <li><a href="/docs/static-page-preprocessing">Preprocessing</a></li>
+                    </ul>
+                    <h4>Rendering</h4>
+                    <ul>
+                            <li><a href="/docs/render-service">Render Service</a></li>
+                            <li class="current"><a href="/docs/renderable-elements">Renderable Elements</a></li>
+                            <li><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></li>
+                            <li><a href="/docs/rendering-engines">Rendering Engines</a></li>
+                    </ul>
+                    <h4>React</h4>
+                    <ul>
+                            <li><a href="/docs/react-ssr">Server-Side Rendering</a></li>
+                            <li><a href="/docs/react-spa">Single Page Apps</a></li>
+                            <li><a href="/docs/react-graphql">React &amp; GraphQL</a></li>
+                    </ul>
+                    <h4>GraphQL</h4>
+                    <ul>
+                            <li><a href="/docs/graphql-intro">GraphQL Intro</a></li>
+                            <li><a href="/docs/graphql-resolvers">Resolvers</a></li>
+                            <li><a href="/docs/graphql-queries-mutations">Queries and Mutations</a></li>
+                            <li><a href="/docs/graphql-subscriptions">Subscriptions</a></li>
+                            <li><a href="/docs/graphql-interfaces-unions">Interfaces and Unions</a></li>
+                            <li><a href="/docs/graphql-scalars">Scalars</a></li>
+                            <li><a href="/docs/graphql-enums">Enums</a></li>
+                            <li><a href="/docs/graphql-endpoints">Built-In Endpoints</a></li>
+                            <li><a href="/docs/graphql-web-socket">Web Socket</a></li>
+                            <li><a href="/docs/graphql-inner-workings">Inner Workings</a></li>
+                    </ul>
+                    <h4>Advanced Guides</h4>
+                    <ul>
+                            <li><a href="/docs/websocket-controllers">WebSocket Controllers</a></li>
+                            <li><a href="/docs/eventstream-controllers">EventStream Controllers</a></li>
+                    </ul>
+                    <h4>Services</h4>
+                    <ul>
+                            <li><a href="/docs/date-formatter">Date Formatter</a></li>
+                            <li><a href="/docs/property-decorators">Property Decorators</a></li>
+                    </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="secondary pad-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div>
+                                <p class="primary-color">Previous article</p>
+                                <h3><a href="/docs/render-service">Render Service</a></h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-right">
+                                <p class="primary-color">Next article</p>
+                                <h3><a href="/docs/page-layout-and-blocks">Page Layout and Blocks</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="primary pad-md">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Copyright © 2018 Zoran Ravic</p>
+            </div>
+            <div class="col-sm-8 footer-links">
+                <div class="row">
+                        <div class="col-sm-6">
+                            <h4>Docs</h4>
+                            <ul>
+                                    <li><a href="/docs/single-file-example">Single File Example</a></li>
+                                    <li><a href="/docs/plugins">Main Concepts</a></li>
+                                    <li><a href="/docs/static-site-setup">Static Sites</a></li>
+                                    <li><a href="/docs/render-service">Rendering</a></li>
+                                    <li><a href="/docs/react-ssr">React</a></li>
+                                    <li><a href="/docs/graphql-intro">GraphQL</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <h4>More</h4>
+                            <ul>
+                                    <li><a href="/docs/websocket-controllers">Advanced Guides</a></li>
+                                    <li><a href="/docs/date-formatter">Services</a></li>
+                            </ul>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="/~/jquery/dist/jquery.slim.min.js" ></script>
+<script src="/~/popper.js/dist/umd/popper.min.js" ></script>
+<script src="/~/bootstrap/dist/js/bootstrap.min.js" ></script>
+<script src="/bundle.js" ></script>
+
+</body>
+</html>
