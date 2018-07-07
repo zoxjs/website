@@ -79,7 +79,7 @@ luckily there is a helper function for this!
 
 ```javascript
 import {buildSchema} from "graphql";
-import {assignResolvers} from "graphql-system";
+import {assignResolvers} from "graphql-plugins";
 
 const schema = buildSchema(typeDefs);
 assignResolvers(schema, resolvers);
@@ -88,7 +88,7 @@ assignResolvers(schema, resolvers);
 To simplify this let's just write:
 
 ```javascript
-import {makeSchema} from "graphql-system";
+import {makeSchema} from "graphql-plugins";
 
 const schema = makeSchema(typeDefs, resolvers);
 ```
@@ -164,5 +164,5 @@ const query = `{
 graphql(schema, query);
 ```
 
-And this is what the `graphql-system` is built upon.  
+And this is what the `graphql-plugins` is built upon.  
 Hopefully you now understand the inner working of GraphQL.

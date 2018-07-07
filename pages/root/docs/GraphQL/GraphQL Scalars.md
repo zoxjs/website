@@ -28,7 +28,7 @@ Or an Error can be thrown to show a custom error message.
 ## Date Scalar
 
 Date is probably the most used non-standard scalar
-and graphql-system comes with a built-in version
+and graphql-plugins comes with a built-in version
 that serializes Date objects as the number of milliseconds since 1 January, 1970 UTC.
 
 This is also a great template for creating new custom scalars.
@@ -71,7 +71,7 @@ export class DateScalar implements IScalar<Date, number>
 ## RegExp Scalar
 
 Regular expressions are great for filtering data,
-so graphql-system comes with a built-in version of this scalar.
+so graphql-plugins comes with a built-in version of this scalar.
 
 The serialized type is a string and it can use one of 2 formats:
 - `"/regexp?/g"` version with slashes allows us to add modifiers

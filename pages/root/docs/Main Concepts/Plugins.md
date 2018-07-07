@@ -72,8 +72,8 @@ function calc(args)
 }
 ```
 
-This is basically how plugins themselves work,
-except that the `plugin-system` is heavily object-oriented
+This is basically how `zox-plugins` themselves work,
+except that the `zox-plugins` are heavily object-oriented
 meaning that all plugins must be classes.
 
 ## Creating Plugins
@@ -190,7 +190,7 @@ function calc(args)
 ```
 
 In this simplistic example we did not need classes,
-but the `plugin-system` was targeted for plugins
+but the `zox-plugins` are targeted for plugins
 which require setup, in form of passing props
 either through the constructor
 or by assigning the object properties directly,

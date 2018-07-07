@@ -7,12 +7,12 @@ include:
 ---
 
 Zox.js was created with one goal in mind: **Making scalable systems**  
-And this can easily be seen in the `graphql-system`.
+And this can easily be achieved using the `graphql-plugins`.
 
-To start developing GrapQL API we need to add the package to our project:
+Setup a new zox project with GraphQL support:
 
 ```bash
-npm i graphql-system
+npm i zox zox-plugins graphql-plugins
 ```
 
 Lets start by defining a data type. Create a file called `User.ts`
@@ -60,7 +60,7 @@ In the following example we will use mocked versions of our _users_ and _subscri
 Create a file called `UserResolvers.ts`
 
 ```typescript
-import {Query, Resolver, ResolverBase} from "graphql-system";
+import {Query, Resolver, ResolverBase} from "graphql-plugins";
 import {UserData, User, UserSubscription, UserDef} from "./User";
 import {users, subscriptions} from "./MockUserData";
 
@@ -94,7 +94,7 @@ that takes one required argument `id`
 which we use to try to find the requested data.
 
 In both cases we referenced the GraphQL type definition `UserDef`,
-which will be used by `graphql-system` to generate the schema.  
+which will be used by `graphql-plugins` to generate the schema.  
 It is important to reference all of the type definitions
 related to each of our resolvers,
 in order to make sure they are all included in the final schema.

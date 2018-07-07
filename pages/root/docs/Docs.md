@@ -63,5 +63,5 @@ as your app grows so does the time you'll spend on your API.
 By creating a GraphQL schema instead
 you'll be able to easily extend and maintain your schema.
 
-On top of that the built-in `graphql-system`
+On top of that the built-in `graphql-plugins`
 allows you to define type fields (endpoints) in an almost `REST-like` way.

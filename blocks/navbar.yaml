@@ -1,5 +1,5 @@
 leftSideLinks:
   - { title: Docs,     url: /docs }
 rightSideLinks:
-  - { title: v0.1.0, url: /versions }
+  - { title: Goals, url: /goals }
   - { title: GitHub, url: https://github.com/zoxjs/zox }
