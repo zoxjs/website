@@ -9,5 +9,5 @@ src/**/*.d.ts
 src/**/*.js
 src/**/*.js.map
 
-# Static Files
-files/*
+# Built assets
+filesBuild/*

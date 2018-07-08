@@ -11,7 +11,7 @@
     "highlight.js": "^9.12.0",
     "jquery": "^3.3.1",
     "popper.js": "^1.14.3",
-    "zox": "^1.0.9",
+    "zox": "^1.0.19",
     "zox-handlebars": "^1.0.1",
     "zox-plugins": "^1.0.1"
   },
@@ -22,11 +22,11 @@
     "start": "node src/dev.js",
     "static": "node src/static.js",
     "build": "node src/build.js",
-    "build-js": "browserify src/frontend/main.js -o files/bundle.js -d",
-    "build-js-min": "browserify src/frontend/main.js -o files/bundle.js -d | uglifyjs files/bundle.js --ecma 5 -o files/bundle.js",
-    "watch-js": "watchify src/frontend/main.js -o files/bundle.js -d -v",
-    "build-css": "sass --src src/styles --dest files --postcss",
-    "watch-css": "sass --src src/styles --dest files --postcss -w",
+    "build-js": "browserify src/frontend/main.js -o filesBuild/bundle.js -d",
+    "build-js-min": "browserify src/frontend/main.js -o filesBuild/bundle.js -d | uglifyjs filesBuild/bundle.js --ecma 5 -o filesBuild/bundle.js",
+    "watch-js": "watchify src/frontend/main.js -o filesBuild/bundle.js -d -v",
+    "build-css": "sass --src src/styles --dest filesBuild --postcss",
+    "watch-css": "sass --src src/styles --dest filesBuild --postcss -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "plugins": {

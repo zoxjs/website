@@ -8,6 +8,9 @@ global:
     - src: $/popper.js/dist/umd/popper.min.js
     - src: $/bootstrap/dist/js/bootstrap.min.js
     - src: bundle.js
+    - src: https://www.googletagmanager.com/gtag/js?id=UA-121980200-1
+      attrs: { async: null }
+    - src: googletaginit.js
 react:
   scripts:
     - src: bundle-react.js

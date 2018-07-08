@@ -1,1 +1,3 @@
-publicFiles: files
+publicFiles:
+  - filesBuild
+  - files
