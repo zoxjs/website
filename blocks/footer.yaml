@@ -11,4 +11,4 @@ linkGroups:
   - title: More
     links:
       - { title: Advanced Guides, url: /docs/websocket-controllers }
-      - { title: Services, url: /docs/date-formatter }
+      - { title: Contribute, url: /contribute }

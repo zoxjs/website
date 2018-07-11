@@ -45,7 +45,10 @@ sidebarLinkGroups:
     links:
       - { title: WebSocket Controllers, url: /docs/websocket-controllers }
       - { title: EventStream Controllers, url: /docs/eventstream-controllers }
-  - title: Services
+  - title: Built-in Services
     links:
       - { title: Date Formatter, url: /docs/date-formatter }
       - { title: Property Decorators, url: /docs/property-decorators }
+  - title: Contributeing
+    links:
+      - { title: How to Contribute, url: /contribute }
