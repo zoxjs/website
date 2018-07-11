@@ -23,7 +23,7 @@
     "static": "node src/static.js",
     "build": "node src/build.js",
     "build-js": "browserify src/frontend/main.js -o filesBuild/bundle.js -d",
-    "build-js-min": "browserify src/frontend/main.js -o filesBuild/bundle.js -d | uglifyjs filesBuild/bundle.js --ecma 5 -o filesBuild/bundle.js",
+    "build-js-min": "browserify src/frontend/main.js -o filesBuild/bundle.js -d && uglifyjs filesBuild/bundle.js --ecma 5 -o filesBuild/bundle.js",
     "watch-js": "watchify src/frontend/main.js -o filesBuild/bundle.js -d -v",
     "build-css": "sass --src src/styles --dest filesBuild --postcss",
     "watch-css": "sass --src src/styles --dest filesBuild --postcss -w",
