@@ -14,7 +14,7 @@ async function start()
     const staticExport = container.get(IStaticExportService);
     console.log('Exporting Static Site...');
     const pages = await staticExport.getPages('/');
-    await staticExport.savePages('../www', pages);
+    await staticExport.savePages('../zoxjs.com-build', pages);
     process.exit(0);
 }
 
