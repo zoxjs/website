@@ -10,4 +10,4 @@ src/**/*.js
 src/**/*.js.map
 
 # Built assets
-filesBuild/*
+files/bundle*

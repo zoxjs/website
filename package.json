@@ -24,11 +24,11 @@
     "start": "node src/dev.js",
     "static": "node src/static.js",
     "build": "node src/build.js",
-    "build-js": "browserify src/frontend/main.js -o filesBuild/bundle.js -d",
-    "build-js-min": "browserify src/frontend/main.js -o filesBuild/bundle.js -d && uglifyjs filesBuild/bundle.js --ecma 5 -o filesBuild/bundle.js",
-    "watch-js": "watchify src/frontend/main.js -o filesBuild/bundle.js -d -v",
-    "build-css": "sass --src src/styles --dest filesBuild --postcss",
-    "watch-css": "sass --src src/styles --dest filesBuild --postcss -w",
+    "build-js": "browserify src/frontend/main.js -o files/bundle.js -d",
+    "build-js-min": "browserify src/frontend/main.js -o files/bundle.js -d && uglifyjs files/bundle.js --ecma 5 -o files/bundle.js",
+    "watch-js": "watchify src/frontend/main.js -o files/bundle.js -d -v",
+    "build-css": "sass src/styles/main.scss files/bundle.css --style=compressed",
+    "watch-css": "sass src/styles/main.scss files/bundle.css --style=compressed --watch",
     "prepublishOnly": "tsc"
   },
   "plugins": {
