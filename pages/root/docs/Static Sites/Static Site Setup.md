@@ -6,20 +6,36 @@ include:
   - docs.sidebar
 ---
 
-This page will guide you through creating a new static site project
-and 
+The easiest way to setup a new project is using the [CLI tool](https://www.npmjs.com/package/zox-cli).
 
-All you need to get started with static pages is to install these 2 npm modules:
+### Install
 
 ```bash
-npm i zox zox-static-pages
+npm i -g zox-cli
 ```
 
-Then [bootstrap your environment](/docs/environment-bootstrapping)
-the same way as when normally running zox server.  
-This will allow you to preview your pages.
+### Usage
 
-To export your site you will need another script
-where you will use the same environment
-and the `StaticExportService` to get your rendered pages
-and required js/css files.
+```bash
+zox init <template-name> <project-name>
+```
+
+### Example
+
+```bash
+zox init static-site-handlebars my-site
+```
+
+### Custom templates
+
+```bash
+zox init <username>/<repo> <my-project>
+```
+
+### Required global tools
+
+**git** for cloning the project
+
+**npm** for installing dependencies
+
+**tsc** for compiling typescript
