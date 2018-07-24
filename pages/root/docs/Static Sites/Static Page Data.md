@@ -108,7 +108,7 @@ Your regular `markdown` text goes below.
 
 Here are the rules for the built-in fields:
 
-- The only required field is the `title`
+- If `title` is not specified then the file name is used
 - If `url` is not specified then it is generated from the `title` field
 and the file path relative to the root pages directory
 without the base file name
