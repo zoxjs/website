@@ -59,5 +59,5 @@ Finally commit and push all changes on both repositories.
 Depending on which template project you used it might have a command that does all this for you, eg:
 
 ```bash
-npm run build-commit-publish
+npm run build-publish
 ```
