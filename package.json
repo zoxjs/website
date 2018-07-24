@@ -24,6 +24,8 @@
     "start": "node src/dev.js",
     "static": "node src/static.js",
     "build": "node src/build.js",
+    "build-commit-publish": "npm run build && git add -A && git commit && git push && npm run publish",
+    "publish": "cd ../zoxjs.com-build && git add -A && git commit && git push",
     "build-js": "browserify src/frontend/main.js -o files/bundle.js -d",
     "build-js-min": "browserify src/frontend/main.js -o files/bundle.js -d && uglifyjs files/bundle.js --ecma 5 -o files/bundle.js",
     "watch-js": "watchify src/frontend/main.js -o files/bundle.js -d -v",
