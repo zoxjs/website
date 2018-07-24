@@ -16,11 +16,19 @@ npm i -g zox-cli
 
 ### Required global tools
 
-**git** for cloning the project
+[node](https://nodejs.org/) to run the project
 
-**npm** for installing dependencies
+[git](https://git-scm.com/downloads) for cloning the project
 
-**tsc** for compiling typescript
+[tsc](https://www.npmjs.com/package/typescript) for compiling typescript
+
+### Optional global tools
+
+[browserify](https://www.npmjs.com/package/browserify) for building frontend scripts
+
+[watchify](https://www.npmjs.com/package/watchify) for watching frontend scripts for changes
+
+[sass](https://www.npmjs.com/package/sass) for building css
 
 ### Usage
 
@@ -38,4 +46,18 @@ zox init static-site-handlebars my-site
 
 ```bash
 zox init <username>/<repo> <my-project>
+```
+
+### Publishing
+
+First make sure to set the remote origin for the source repository and the www repository.
+
+Then build static files.
+
+Finally commit and push all changes on both repositories.
+
+Depending on which template project you used it might have a command that does all this for you, eg:
+
+```bash
+npm run build-commit-publish
 ```
