@@ -29,7 +29,7 @@ You can register `get`, `post`, `put` or `delete` endpoints by using the functio
 They all take the route as the first argument and a handler as the second argument.
 
 The handler's only argument is the request and it is expected to return a response.  
-You can access the route parameters and the query using the same was as with regular controllers,
+You can access the route parameters and the query the same way as in regular controllers,
 using `this.params` and `this.query`.
 Of course to access the `this` object you will have to use `function ()` instead of `() =>`.
 
@@ -53,7 +53,7 @@ you will have to manually get them before using them.
 const config = this.container.get(ConfigService);
 ```
 
-If you want to use complex controllers you can still do that, but this requires more typing.
+If you want to use the standard controllers you can still do that.
 
 ```ts
 Route({

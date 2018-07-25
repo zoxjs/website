@@ -90,7 +90,7 @@ but to take full advantage of them you should create a custom class
 that extends `Renderable` and takes props through the constructor.
 
 ```ts
-import {Renderable} from "web-server/Renderable";
+import {Renderable} from "zox/lib/Renderable/Renderable";
 
 export type Props = {
     displayMode: 'full' | 'teaser' | 'sidebar'

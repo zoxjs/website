@@ -15,7 +15,19 @@ The built-in `bootstrap()` function should be sufficient for most use cases.
 Here's how you can use it in your dev.js file:
 
 ```typescript
-import {bootstrap, startServer} from "web-server/bootstrap";
+import {bootstrap, startServer} from "zox";
+
+bootstrap().then(container =>
+{
+    startServer(container, /* port: */ 8080);
+    console.log('Started');
+});
+```
+
+Or using async-await:
+
+```typescript
+import {bootstrap, startServer} from "zox";
 
 (async function start()
 {
@@ -56,7 +68,7 @@ Then define how your plugins are loaded.
 
 ```js
 await pluginDiscovery.scanProject(); // default method
-await pluginDiscovery.scanDirectory('src/Plugins'); // custom plugins directory
+await pluginDiscovery.scanDirectory('src/Plugins'); // hardcoded plugins directory path
 ```
 
 Now you will need to register your services.
@@ -67,7 +79,7 @@ Since the config service has required parameters we will have to set it up separ
 container.registerUnresolved(new ConfigService(options.configBasePath));
 ```
 
-All other services should instead be able to get their options from the config service
+All other services should instead be able to get their options from the config service,
 so we can load all of them in a single line of code.
 
 ```js
