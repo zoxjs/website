@@ -8,7 +8,8 @@ linkGroups:
       - { title: Rendering, url: /docs/render-service }
       - { title: React, url: /docs/react-ssr }
       - { title: GraphQL, url: /docs/graphql-intro }
+      - { title: Advanced Guides, url: /docs/websocket-controllers }
   - title: More
     links:
-      - { title: Advanced Guides, url: /docs/websocket-controllers }
+      - { title: Contact, url: /contact }
       - { title: Contribute, url: /contribute }

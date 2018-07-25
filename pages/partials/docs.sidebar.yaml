@@ -5,9 +5,9 @@ sidebarLinkGroups:
       - { title: Single File Example, url: /docs/single-file-example }
   - title: Main Concepts
     links:
+      - { title: Environment Bootstrapping, url: /docs/environment-bootstrapping }
       - { title: Plugins, url: /docs/plugins }
       - { title: Services, url: /docs/services }
-      - { title: Environment Bootstrapping, url: /docs/environment-bootstrapping }
       - { title: Configuration, url: /docs/config }
       - { title: Controllers, url: /docs/controllers }
       - { title: Responses, url: /docs/responses }

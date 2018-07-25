@@ -14,3 +14,5 @@ Current goals:
 - Caching rendered pages
 
 - More efficient static file delivery
+
+You can request new features by opening an issue on [GitGub](https://github.com/zoxjs/zox/issues/new).

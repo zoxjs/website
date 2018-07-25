@@ -9,7 +9,7 @@ include:
 Web Server was designed to be flexible and extensible,
 so depending your goals you likely wont need to go through most of the docs.
 
-## [The Basics](/docs/plugins)
+## [The Basics](/docs/environment-bootstrapping)
 
 If you're looking to start coding right away
 you'll first want to learn the main concepts
