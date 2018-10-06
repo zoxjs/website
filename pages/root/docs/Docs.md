@@ -6,7 +6,7 @@ include:
   - docs.sidebar
 ---
 
-Web Server was designed to be flexible and extensible,
+Zox.js was designed to be flexible and extensible,
 so depending your goals you likely wont need to go through most of the docs.
 
 ## [The Basics](/docs/environment-bootstrapping)

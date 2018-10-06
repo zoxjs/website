@@ -32,7 +32,8 @@ It's also possible to hard code values into the query:
 }
 ```
 
-> Node: Both Queries and Mutations are passed in the `query` field
+> **Note**  
+Both Queries and Mutations are passed in the `query` field
 
 ## GET request
 
