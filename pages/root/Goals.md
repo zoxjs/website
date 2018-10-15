@@ -15,4 +15,4 @@ Current goals:
 
 - More efficient static file delivery
 
-You can request new features by opening an issue on [GitGub](https://github.com/zoxjs/zox/issues/new).
+You can request new features by opening an issue on [GitHub](https://github.com/zoxjs/zox/issues/new).
